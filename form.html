@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="form.css" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div>
+      <div class="inputbox">
+        <input id="input" type="text" placeholder="Enter your Name" />
+        <input id="email" type="email" placeholder="Enter your Email" />
+        <input
+          id="password"
+          type="password"
+          placeholder="Enter your password"
+        />
+        <button onclick="add()" id="butn">Add</button>
+      </div>
+
+      <div id="output">
+        <table id="datatable">
+          <thead>
+            <tr>
+              <th>FirstName</th>
+              <th>Email</th>
+              <th>Password</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <script>
+      function add() {
+        let input = document.getElementById("input").value.trim();
+        let email = document.getElementById("email").value.trim();
+        let password = document.getElementById("password").value.trim();
+
+        if (!input || !email || !password) {
+          alert("please fill the blanks");
+          return;
+        }
+
+        let ar = JSON.parse(localStorage.getItem("store")) || [];
+        ar.push({
+          name: input,
+          email: email,
+          password: password,
+        });
+
+        localStorage.setItem("store", JSON.stringify(ar));
+
+        const tablebody = document.querySelector("#datatable tbody");
+
+        const tr = document.createElement("tr");
+
+        tr.innerHTML = `
+      <td>${input}</td>
+      <td>${email}</td>
+      <td>${password}</td>
+      <td class="actions">
+        <button onclick="edit(this)">Edit</button>
+        <button onclick="delet(this)">Delete</button>
+      </td>
+    `;
+
+        tablebody.appendChild(tr);
+
+        document.getElementById("input").value = "";
+        document.getElementById("email").value = "";
+        document.getElementById("password").value = "";
+      }
+
+      function delet(btn) {
+        const raw = btn.closest("tr");
+        raw.remove();
+      }
+      function delet(btn, index) {
+        const row = btn.closest("tr");
+        row.remove();
+
+        let ar = JSON.parse(localStorage.getItem("store")) || [];
+
+        ar.splice(index, 1);
+
+        localStorage.setItem("store", JSON.stringify(ar));
+      }
+
+      function edit(btn) {
+        const row = btn.parentElement.parentElement;
+        const cells = row.querySelectorAll("td");
+        const name = prompt("Edit Name", cells[0].textContent);
+        const email = prompt("Edit Email", cells[1].textContent);
+        const password = prompt("Edit Password", cells[2].textContent);
+
+        if (name && email && password) {
+          cells[0].textContent = name;
+          cells[1].textContent = email;
+          cells[2].textContent = password;
+
+          let ar = JSON.parse(localStorage.getItem("store")) || [];
+          ar.push({
+            name: cells[0].textContent,
+            email: cells[2].textContent,
+            password: cells[3].textContent,
+          });
+
+          localStorage.setItem("store", JSON.stringify(ar));
+        }
+      }
+    </script>
+  </body>
+</html>
